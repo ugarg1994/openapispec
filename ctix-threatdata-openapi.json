@@ -1,0 +1,135 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Cyware CTIX Threat Data (Direct - CYW Auth)",
+    "version": "1.0.0",
+    "description": "Direct integration to Cyware CTIX Threat Data search using Authorization header: CYW <token>."
+  },
+  "servers": [
+    {
+      "url": "https://demov6.cyware.com/ctixapi",
+      "description": "CTIX API base"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "cywAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Authorization header in the format: CYW <token>"
+      }
+    }
+  },
+  "security": [
+    {
+      "cywAuth": []
+    }
+  ],
+  "tags": [
+    { "name": "Threat Data" },
+    { "name": "Health" }
+  ],
+  "paths": {
+    "/ping/": {
+      "get": {
+        "tags": ["Health"],
+        "operationId": "ctixPing",
+        "summary": "Ping CTIX",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" }
+        }
+      }
+    },
+    "/ingestion/threat-data/list/": {
+      "post": {
+        "tags": ["Threat Data"],
+        "operationId": "threatDataSearch",
+        "summary": "Search CTIX threat data",
+        "description": "Searches CTIX threat data objects using a CQL query string in the request body. Supports paging + sorting via query parameters.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 10 }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "default": "-ctix_modified" },
+            "description": "Sort field, e.g. -ctix_modified (descending)."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["query"],
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "CTIX query (CQL)"
+                  }
+                }
+              },
+              "examples": {
+                "list_common_types": {
+                  "summary": "List common object types",
+                  "value": {
+                    "query": "type IN (\"indicator\",\"malware\",\"threat-actor\",\"vulnerability\",\"attack-pattern\",\"campaign\",\"course-of-action\",\"identity\",\"infrastructure\",\"intrusion-set\",\"location\",\"malware-analysis\",\"observed-data\",\"opinion\",\"tool\",\"report\",\"custom-object\",\"observable\",\"incident\",\"note\",\"grouping\")"
+                  }
+                },
+                "complex_filtered_query": {
+                  "summary": "Complex CQL with many filters",
+                  "value": {
+                    "query": "type IN (\"indicator\",\"malware\",\"threat-actor\",\"vulnerability\",\"attack-pattern\",\"campaign\",\"course-of-action\",\"identity\",\"infrastructure\",\"intrusion-set\",\"location\",\"malware-analysis\",\"observed-data\",\"opinion\",\"tool\",\"report\",\"custom-object\",\"observable\",\"incident\",\"note\",\"grouping\") AND ioc_type = \"ALL\" AND custom_object_type = \"x-bank-card\" AND source = \"92614d49-0766-4331-bbc0-be4e78ad7b3a\" AND source_type = \"CUSTOM_STIX_SOURCES\" AND source_collection = \"5477886b-bcf8-4267-811a-128ee3dfdc53\" AND source_confidence = \"HIGH\" AND source_confidence_value RANGE (\"10\",\"90\") AND source_created <= \"1771995540\" AND source_modified <= \"1771995540\" AND tlp = \"AMBER\" AND tag = \"896ab022-11de-4ea3-98c7-6302e5a58fed\" AND is_deprecated = \"true\" AND is_false_positive = \"true\""
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Threat data results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": { "description": "Bad request" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "429": { "description": "Rate limited" },
+          "500": { "description": "Server error" }
+        }
+      }
+    }
+  }
+}
