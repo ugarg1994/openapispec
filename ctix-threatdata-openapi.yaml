@@ -86,7 +86,7 @@ paths:
                   description: CTIX query (CQL)
             examples:
               list_common_types:
-                summary: List common object types (like your basic example)
+                summary: List common object types
                 value:
                   query: >-
                     type IN ("indicator","malware","threat-actor","vulnerability","attack-pattern","campaign",
@@ -95,7 +95,7 @@ paths:
                     "grouping")
 
               complex_filtered_query:
-                summary: Complex CQL with many filters (your example)
+                summary: Complex CQL with many filters
                 value:
                   query: |-
                     type IN ("indicator","malware","threat-actor","vulnerability","attack-pattern","campaign",
