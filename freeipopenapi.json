@@ -1,0 +1,62 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Free IP API",
+    "description": "A free IP lookup API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://freeipapi.com/api/"
+    }
+  ],
+  "paths": {
+    "/json/{ipaddress}": {
+      "get": {
+        "operationId": "lookupIpAddressGeolocation",
+        "summary": "Lookup IP Address geolocation information",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ipaddress",
+            "required": true,
+            "description": "The IP address to lookup",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/lookupIpAddressGeolocationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "lookupIpAddressGeolocationResponse": {
+        "type": "object",
+        "properties": {
+          "ipVersion": { "type": "integer", "description": "The IP address version" },
+          "ipAddress": { "type": "string", "description": "The IP address" },
+          "latitude": { "type": "number", "description": "Latitude" },
+          "longitude": { "type": "number", "description": "Longitude" },
+          "countryName": { "type": "string", "description": "Country" },
+          "zipCode": { "type": "string", "description": "Zip code" },
+          "cityName": { "type": "string", "description": "City" },
+          "regionName": { "type": "string", "description": "Region" },
+          "continent": { "type": "string", "description": "Continent" }
+        }
+      }
+    }
+  }
+}
